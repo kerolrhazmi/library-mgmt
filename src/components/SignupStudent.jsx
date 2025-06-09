@@ -16,7 +16,7 @@ const SignupStudent = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const result = await signUpNewUser(email, password, displayName);
+      const result = await signUpNewUser(email, password, displayName, 'user');
       if (result.success) {
         navigate('/');
       }

@@ -8,11 +8,14 @@ const AdminBookManager = () => {
     author: '',
     genre: '',
     published_year: '',
+    cover_url: '',
+    description: '',
   });
+  const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Fetch books from Supabase
+  // Fetch books
   const fetchBooks = async () => {
     setLoading(true);
     const { data, error } = await supabase.from('books').select('*').order('title');
@@ -29,13 +32,27 @@ const AdminBookManager = () => {
     fetchBooks();
   }, []);
 
-  // Handle form input changes
+  // Handle form input
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // Add a new book
-  const handleAddBook = async (e) => {
+  // Reset form
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      author: '',
+      genre: '',
+      published_year: '',
+      cover_url: '',
+      description: '',
+    });
+    setEditingId(null);
+    setError('');
+  };
+
+  // Add or update book
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.title || !formData.author) {
@@ -44,47 +61,81 @@ const AdminBookManager = () => {
     }
 
     setLoading(true);
-    const { error } = await supabase.from('books').insert([
-      {
-        title: formData.title,
-        author: formData.author,
-        genre: formData.genre,
-        published_year: formData.published_year ? parseInt(formData.published_year) : null,
-        
-      },
-    ]);
 
-    if (error) {
-      setError('Failed to add book');
+    if (editingId) {
+      const { error } = await supabase
+        .from('books')
+        .update({
+          title: formData.title,
+          author: formData.author,
+          genre: formData.genre,
+          published_year: formData.published_year ? parseInt(formData.published_year) : null,
+          cover_url: formData.cover_url || null,
+          description: formData.description || null,
+        })
+        .eq('id', editingId);
+
+      if (error) {
+        setError('Failed to update book');
+      } else {
+        resetForm();
+      }
     } else {
-      setFormData({ title: '', author: '', genre: '', published_year: '' });
-      setError('');
-      fetchBooks();
+      const { error } = await supabase.from('books').insert([
+        {
+          title: formData.title,
+          author: formData.author,
+          genre: formData.genre,
+          published_year: formData.published_year ? parseInt(formData.published_year) : null,
+          cover_url: formData.cover_url || null,
+          description: formData.description || null,
+        },
+      ]);
+
+      if (error) {
+        setError('Failed to add book');
+      } else {
+        resetForm();
+      }
     }
+
+    fetchBooks();
     setLoading(false);
   };
 
-  // Delete a book
+  // Delete book
   const handleDeleteBook = async (id) => {
     if (!window.confirm('Are you sure you want to delete this book?')) return;
 
     setLoading(true);
     const { error } = await supabase.from('books').delete().eq('id', id);
-
     if (error) {
       setError('Failed to delete book');
     } else {
-      setError('');
       fetchBooks();
     }
     setLoading(false);
   };
 
+  // Load book data into form for editing
+  const handleEditBook = (book) => {
+    setFormData({
+      title: book.title || '',
+      author: book.author || '',
+      genre: book.genre || '',
+      published_year: book.published_year || '',
+      cover_url: book.cover_url || '',
+      description: book.description || '',
+    });
+    setEditingId(book.id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="max-w-3xl mx-auto p-4 mt-[50px]">
-      <h2 className="text-2xl font-semibold mb-4">Manage Books</h2>
+      <h2 className="text-2xl font-semibold mb-4">{editingId ? 'Edit Book' : 'Add Book'}</h2>
 
-      <form onSubmit={handleAddBook} className="mb-8 space-y-4">
+      <form onSubmit={handleSubmit} className="mb-8 space-y-4">
         <input
           type="text"
           name="title"
@@ -119,13 +170,41 @@ const AdminBookManager = () => {
           onChange={handleChange}
           className="border p-2 rounded w-full"
         />
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-        >
-          Add Book
-        </button>
+        <input
+          type="text"
+          name="cover_url"
+          placeholder="Cover Image URL"
+          value={formData.cover_url}
+          onChange={handleChange}
+          className="border p-2 rounded w-full"
+        />
+        <textarea
+          name="description"
+          placeholder="Book Description"
+          value={formData.description}
+          onChange={handleChange}
+          className="border p-2 rounded w-full"
+          rows={4}
+        />
+
+        <div className="flex gap-2">
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-[#E41B1B] text-white py-2 px-4 rounded hover:bg-red-700"
+          >
+            {editingId ? 'Update Book' : 'Add Book'}
+          </button>
+          {editingId && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500"
+            >
+              Cancel Edit
+            </button>
+          )}
+        </div>
         {error && <p className="text-red-600 mt-2">{error}</p>}
       </form>
 
@@ -144,12 +223,20 @@ const AdminBookManager = () => {
               <span>
                 <strong>{book.title}</strong> by {book.author} ({book.published_year || 'N/A'})
               </span>
-              <button
-                onClick={() => handleDeleteBook(book.id)}
-                className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
-              >
-                Delete
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleEditBook(book)}
+                  className="bg-yellow-400 hover:bg-yellow-500 text-white py-1 px-3 rounded"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDeleteBook(book.id)}
+                  className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
+                >
+                  Delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>

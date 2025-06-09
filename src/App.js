@@ -16,6 +16,7 @@ import DashboardAdmin from "./components/DashboardAdmin"
 import SignupStudent from "./components/SignupStudent";
 import AdminDashboard from './components/DashboardAdmin';
 import AdminBookManager from './components/AdminBookManager';
+import AdminApproval from './components/AdminApproval'
 
 // Auth Context Provider
 import { AuthContextProvider } from "./context/AuthContext";
@@ -59,6 +60,7 @@ function App() {
             <Route path="/dashboard-admin" element={<DashboardAdmin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/books" element={<AdminBookManager />} />
+            <Route path="/admin/approval" element={<AdminApproval/>} />
             
           </Routes>
         </div>

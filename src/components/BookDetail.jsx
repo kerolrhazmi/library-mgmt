@@ -6,6 +6,10 @@ const BookDetail = () => {
   const { id } = useParams();
   const [book, setBook] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [borrowDate, setBorrowDate] = useState('');
+  const [returnDate, setReturnDate] = useState('');
+  const [message, setMessage] = useState('');
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -19,6 +23,50 @@ const BookDetail = () => {
     };
     fetchBook();
   }, [id]);
+
+  const handleBorrow = async () => {
+    setMessage('');
+    if (!borrowDate || !returnDate) {
+      setMessage('Please select both borrow and return dates.');
+      return;
+    }
+    if (borrowDate > returnDate) {
+      setMessage('Return date must be after borrow date.');
+      return;
+    }
+
+    setSubmitLoading(true);
+
+    // Get current user correctly with new supabase client method
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      setMessage('You must be logged in to borrow books.');
+      setSubmitLoading(false);
+      return;
+    }
+
+    const { error } = await supabase.from('borrow_requests').insert([
+      {
+        user_id: user.id,
+        book_id: book.id,
+        borrow_date: borrowDate,
+        return_date: returnDate,
+        status: 'pending',
+      },
+    ]);
+
+    if (error) {
+      console.error('Insert error:', error);
+      setMessage('Failed to submit borrow request.');
+      
+    } else {
+      setMessage('Borrow request submitted successfully!');
+      setBorrowDate('');
+      setReturnDate('');
+    }
+    setSubmitLoading(false);
+  };
 
   if (loading)
     return (
@@ -59,12 +107,34 @@ const BookDetail = () => {
             </p>
           </div>
 
-          <button
-            className="mt-8 md:mt-auto bg-[#E41B1B] hover:bg-[#C41717] text-white py-3 px-8 rounded-md font-semibold transition self-center md:self-start"
-            type="button"
-          >
-            Borrow
-          </button>
+          <div className="mt-8 md:mt-auto flex flex-col gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <input
+                type="date"
+                value={borrowDate}
+                onChange={(e) => setBorrowDate(e.target.value)}
+                className="border p-2 rounded w-full md:w-auto"
+                placeholder="Borrow Date"
+              />
+              <input
+                type="date"
+                value={returnDate}
+                onChange={(e) => setReturnDate(e.target.value)}
+                className="border p-2 rounded w-full md:w-auto"
+                placeholder="Return Date"
+              />
+            </div>
+
+            <button
+              className="bg-[#E41B1B] hover:bg-[#C41717] text-white py-3 px-8 rounded-md font-semibold transition"
+              onClick={handleBorrow}
+              disabled={submitLoading}
+            >
+              {submitLoading ? 'Submitting...' : 'Borrow'}
+            </button>
+
+            {message && <p className="text-center text-red-600">{message}</p>}
+          </div>
         </div>
       </div>
     </div>
