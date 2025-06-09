@@ -9,7 +9,7 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
+    <div className="max-w-4xl mx-auto p-8 mt-[100px]">
       <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
       
       <button

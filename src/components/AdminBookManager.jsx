@@ -50,7 +50,7 @@ const AdminBookManager = () => {
         author: formData.author,
         genre: formData.genre,
         published_year: formData.published_year ? parseInt(formData.published_year) : null,
-        available: true,
+        
       },
     ]);
 
