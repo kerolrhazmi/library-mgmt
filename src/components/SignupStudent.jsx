@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { UserAuth } from '../context/AuthContext';
 
-const SignupAdmin = () => {
+const SignupStudent = () => {
   const [email, setEmail] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [password, setPassword] = useState('');
@@ -16,7 +16,7 @@ const SignupAdmin = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const result = await signUpNewUser(email, password, displayName, 'admin');
+      const result = await signUpNewUser(email, password, displayName);
       if (result.success) {
         navigate('/');
       }
@@ -30,7 +30,7 @@ const SignupAdmin = () => {
   return (
     <div className="bg-gradient-to-r from-gray-200 to-gray-50 h-[600px] w-full flex items-center justify-center">
       <div className="bg-white shadow-md rounded-2xl p-10 w-[400px] text-center">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-4">Sign Up For admin</h1>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-4">Sign Up For Student</h1>
         <p className="text-gray-600 mb-6">
           Enter your details. Already have an account?
           <Link className="text-red-500" to="/login-admin"> Login</Link>
@@ -72,4 +72,4 @@ const SignupAdmin = () => {
   );
 };
 
-export default SignupAdmin;
+export default SignupStudent;

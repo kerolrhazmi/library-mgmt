@@ -9,6 +9,7 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
   const { session, signOut } = UserAuth();
 
   const displayName = session?.user?.user_metadata?.display_name || null;
+  const role = session?.user?.user_metadata?.role || null;  // get role from user metadata
 
   const handleHomeClick = () => {
     if (location.pathname === '/') {
@@ -44,6 +45,10 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
     } catch (error) {
       console.error('Logout failed:', error);
     }
+  };
+
+  const handleAdminDashboardClick = () => {
+    navigate('/dashboard-admin');
   };
 
   useEffect(() => {
@@ -85,6 +90,16 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
           >
             About
           </h1>
+
+          {/* Show admin dashboard only if role === 'admin' */}
+          {role === 'admin' && (
+            <h1
+              className="poppins-medium text-[17px] pl-5 hover:text-[#E41B1B] transition duration-300 cursor-pointer font-bold"
+              onClick={handleAdminDashboardClick}
+            >
+              Admin Dashboard
+            </h1>
+          )}
         </div>
 
         <div className="flex items-center space-x-4">

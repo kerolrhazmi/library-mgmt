@@ -12,6 +12,10 @@ import SignupAdmin from "./components/SignupAdmin";
 import SearchResult from "./components/SearchResult";
 import BookDetail from "./components/BookDetail";
 import AboutUs from "./components/AboutUs"
+import DashboardAdmin from "./components/DashboardAdmin"
+import SignupStudent from "./components/SignupStudent";
+import AdminDashboard from './components/DashboardAdmin';
+import AdminBookManager from './components/AdminBookManager';
 
 // Auth Context Provider
 import { AuthContextProvider } from "./context/AuthContext";
@@ -48,9 +52,13 @@ function App() {
             <Route path="/login-admin" element={<LoginAdmin />} />
             <Route path="/login-student" element={<LoginStudent />} />
             <Route path="/signup-admin" element={<SignupAdmin />} />
+            <Route path="/signup-student" element={<SignupStudent />} />
             <Route path="/search-results" element={<SearchResult />} />
             <Route path="/search" element={<SearchResult />} />
             <Route path="/book/:id" element={<BookDetail />} />
+            <Route path="/dashboard-admin" element={<DashboardAdmin />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/books" element={<AdminBookManager />} />
             
           </Routes>
         </div>
