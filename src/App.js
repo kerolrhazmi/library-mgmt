@@ -39,6 +39,7 @@ function App() {
       <Router>
         <div className="cursor-default">
           <Navbar onGalleryClick={scrollToHero2} onLoginClick={scrollToLogin} />
+          
           <Routes>
             <Route
               path="/"
@@ -65,6 +66,7 @@ function App() {
             <Route path="/profile-page" element={<ProfilePage/>} />
             
           </Routes>
+          
         </div>
       </Router>
     </AuthContextProvider>

@@ -132,66 +132,71 @@ const AdminBookManager = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4 mt-[50px]">
-      <h2 className="text-2xl font-semibold mb-4">{editingId ? 'Edit Book' : 'Add Book'}</h2>
+    <div className="max-w-4xl mx-auto p-6 mt-[90px]">
+      <h2 className="text-3xl font-extrabold mb-6 text-gray-800 border-b border-gray-300 pb-2">
+        {editingId ? 'Edit Book' : 'Add New Book'}
+      </h2>
 
-      <form onSubmit={handleSubmit} className="mb-8 space-y-4">
-        <input
-          type="text"
-          name="title"
-          placeholder="Title"
-          value={formData.title}
-          onChange={handleChange}
-          className="border p-2 rounded w-full"
-          required
-        />
-        <input
-          type="text"
-          name="author"
-          placeholder="Author"
-          value={formData.author}
-          onChange={handleChange}
-          className="border p-2 rounded w-full"
-          required
-        />
-        <input
-          type="text"
-          name="genre"
-          placeholder="Genre"
-          value={formData.genre}
-          onChange={handleChange}
-          className="border p-2 rounded w-full"
-        />
-        <input
-          type="number"
-          name="published_year"
-          placeholder="Published Year"
-          value={formData.published_year}
-          onChange={handleChange}
-          className="border p-2 rounded w-full"
-        />
-        <input
-          type="text"
-          name="cover_url"
-          placeholder="Cover Image URL"
-          value={formData.cover_url}
-          onChange={handleChange}
-          className="border p-2 rounded w-full"
-        />
-        <textarea
-          name="description"
-          placeholder="Book Description"
-          value={formData.description}
-          onChange={handleChange}
-          className="border p-2 rounded w-full"
-          rows={4}
-        />
+      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <input
+            type="text"
+            name="title"
+            placeholder="Title *"
+            value={formData.title}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+            required
+          />
+          <input
+            type="text"
+            name="author"
+            placeholder="Author *"
+            value={formData.author}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+            required
+          />
+          <input
+            type="text"
+            name="genre"
+            placeholder="Genre"
+            value={formData.genre}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+          />
+          <input
+            type="number"
+            name="published_year"
+            placeholder="Published Year"
+            value={formData.published_year}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+            min="0"
+          />
+          <input
+            type="text"
+            name="cover_url"
+            placeholder="Cover Image URL"
+            value={formData.cover_url}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-md p-3 col-span-full focus:outline-none focus:ring-2 focus:ring-red-500"
+          />
+          <textarea
+            name="description"
+            placeholder="Book Description"
+            value={formData.description}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-md p-3 col-span-full resize-none focus:outline-none focus:ring-2 focus:ring-red-500"
+            rows={4}
+          />
+        </div>
 
-        <div className="flex gap-2">
+        <div className="flex items-center gap-4 mt-6">
           <button
             type="submit"
             disabled={loading}
-            className="bg-[#E41B1B] text-white py-2 px-4 rounded hover:bg-red-700"
+            className="bg-red-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-red-700 transition-colors disabled:opacity-50"
           >
             {editingId ? 'Update Book' : 'Add Book'}
           </button>
@@ -199,40 +204,61 @@ const AdminBookManager = () => {
             <button
               type="button"
               onClick={resetForm}
-              className="bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500"
+              className="bg-gray-400 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-500 transition-colors"
             >
-              Cancel Edit
+              Cancel
             </button>
           )}
         </div>
-        {error && <p className="text-red-600 mt-2">{error}</p>}
+        {error && <p className="text-red-600 mt-4 font-medium">{error}</p>}
       </form>
 
-      <h3 className="text-xl font-semibold mb-2">Existing Books</h3>
+      <h3 className="text-2xl font-bold mb-4 text-gray-700">Existing Books</h3>
+
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-center text-gray-500">Loading...</p>
       ) : books.length === 0 ? (
-        <p>No books found.</p>
+        <p className="text-center text-gray-500">No books found.</p>
       ) : (
-        <ul>
+        <ul className="grid gap-6 sm:grid-cols-2">
           {books.map((book) => (
             <li
               key={book.id}
-              className="flex justify-between border-b py-2 items-center"
+              className="bg-white shadow rounded-lg p-4 flex flex-col md:flex-row md:items-center md:justify-between hover:shadow-lg transition-shadow"
             >
-              <span>
-                <strong>{book.title}</strong> by {book.author} ({book.published_year || 'N/A'})
-              </span>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-4">
+                {book.cover_url ? (
+                  <img
+                    src={book.cover_url}
+                    alt={book.title}
+                    className="w-16 h-24 object-cover rounded-md flex-shrink-0 border border-gray-300"
+                  />
+                ) : (
+                  <div className="w-16 h-24 bg-gray-200 flex items-center justify-center rounded-md border border-gray-300 text-gray-400 text-sm select-none">
+                    No Image
+                  </div>
+                )}
+                <div>
+                  <h4 className="font-semibold text-lg text-gray-800">{book.title}</h4>
+                  <p className="text-gray-600">by {book.author}</p>
+                  <p className="text-sm text-gray-500">
+                    {book.genre || 'Genre N/A'} • {book.published_year || 'Year N/A'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 md:mt-0 flex gap-3">
                 <button
                   onClick={() => handleEditBook(book)}
-                  className="bg-yellow-400 hover:bg-yellow-500 text-white py-1 px-3 rounded"
+                  className="bg-yellow-400 hover:bg-yellow-500 text-white py-2 px-5 rounded-md font-semibold transition-colors"
+                  aria-label={`Edit ${book.title}`}
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDeleteBook(book.id)}
-                  className="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
+                  className="bg-red-600 hover:bg-red-700 text-white py-2 px-5 rounded-md font-semibold transition-colors"
+                  aria-label={`Delete ${book.title}`}
                 >
                   Delete
                 </button>
