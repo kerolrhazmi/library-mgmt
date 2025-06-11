@@ -12,14 +12,12 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
   const navigate = useNavigate();
   const { session, signOut } = UserAuth();
 
-  // Scroll-based shadow effect
   useEffect(() => {
     const handleScroll = () => setHasShadow(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Fetch profile info on session change
   useEffect(() => {
     const fetchProfile = async () => {
       if (session?.user?.id) {
@@ -41,7 +39,6 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
     fetchProfile();
   }, [session]);
 
-  // Navigation handlers
   const handleHomeClick = () => {
     location.pathname === '/'
       ? window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -67,9 +64,13 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
     navigate('/dashboard-admin');
   };
 
+  const handleProfileClick = () => {
+    navigate('/profile-page');
+  };
+
   const handleLogout = async () => {
     try {
-      await signOut(); // Properly sign out user
+      await signOut();
       setDisplayName(null);
       setRole(null);
       navigate('/');
@@ -81,7 +82,7 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
   return (
     <div className={`fixed top-0 left-0 w-full z-50 transition-shadow duration-300 ${hasShadow ? 'shadow-md' : ''}`}>
       <div className="bg-gradient-to-r from-gray-200 to-gray-50 h-[100px] flex items-center justify-between px-6">
-        
+
         {/* Logo */}
         <div className="flex items-center">
           <span className="special-gothic-expanded-one-regular text-[30px] text-[#E41B1B]">Putra</span>
@@ -100,6 +101,9 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
             >
               Admin Dashboard
             </h1>
+          )}
+          {role === 'user' && (
+            <NavLink label="Profile" onClick={handleProfileClick} />
           )}
         </div>
 
@@ -131,7 +135,6 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
   );
 };
 
-// Small reusable nav link component
 const NavLink = ({ label, onClick }) => (
   <h1
     className="poppins-medium text-[17px] hover:text-[#E41B1B] transition duration-300 cursor-pointer"
