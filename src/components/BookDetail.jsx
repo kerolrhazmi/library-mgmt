@@ -10,18 +10,41 @@ const BookDetail = () => {
   const [returnDate, setReturnDate] = useState('');
   const [message, setMessage] = useState('');
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     const fetchBook = async () => {
-      const { data, error } = await supabase.from('books').select('*').eq('id', id).single();
+      const { data, error } = await supabase
+        .from('books')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       setLoading(false);
+
       if (error) {
         console.error('Error fetching book:', error.message);
       } else {
         setBook(data);
       }
     };
+
+    const fetchReviews = async () => {
+      const { data, error } = await supabase
+        .from('ratings')
+        .select('*, profiles(display_name)')
+        .eq('book_id', Number(id))
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching reviews:', error.message);
+      } else {
+        setReviews(data);
+      }
+    };
+
     fetchBook();
+    fetchReviews();
   }, [id]);
 
   const handleBorrow = async () => {
@@ -37,7 +60,6 @@ const BookDetail = () => {
 
     setSubmitLoading(true);
 
-    // Get current user correctly with new supabase client method
     const { data: { user }, error: userError } = await supabase.auth.getUser();
 
     if (userError || !user) {
@@ -59,13 +81,23 @@ const BookDetail = () => {
     if (error) {
       console.error('Insert error:', error);
       setMessage('Failed to submit borrow request.');
-      
     } else {
       setMessage('Borrow request submitted successfully!');
       setBorrowDate('');
       setReturnDate('');
     }
+
     setSubmitLoading(false);
+  };
+
+  const renderStars = (rating) => {
+    return (
+      <div className="flex text-yellow-500">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span key={star}>{star <= rating ? '★' : '☆'}</span>
+        ))}
+      </div>
+    );
   };
 
   if (loading)
@@ -83,7 +115,7 @@ const BookDetail = () => {
     );
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-50 px-4 py-12">
+    <div className="min-h-screen flex flex-col items-center bg-gray-50 px-4 py-12 gap-12 mt-[70px]">
       <div className="max-w-4xl w-full bg-white rounded-lg shadow-lg p-8 flex flex-col md:flex-row gap-8">
         <img
           src={book.cover_url || 'https://via.placeholder.com/200x300?text=No+Cover'}
@@ -114,14 +146,12 @@ const BookDetail = () => {
                 value={borrowDate}
                 onChange={(e) => setBorrowDate(e.target.value)}
                 className="border p-2 rounded w-full md:w-auto"
-                placeholder="Borrow Date"
               />
               <input
                 type="date"
                 value={returnDate}
                 onChange={(e) => setReturnDate(e.target.value)}
                 className="border p-2 rounded w-full md:w-auto"
-                placeholder="Return Date"
               />
             </div>
 
@@ -136,6 +166,28 @@ const BookDetail = () => {
             {message && <p className="text-center text-red-600">{message}</p>}
           </div>
         </div>
+      </div>
+
+      {/* Review Section */}
+      <div className="max-w-4xl w-full bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">User Reviews</h2>
+        {reviews.length === 0 ? (
+          <p className="text-gray-500 italic">No reviews yet for this book</p>
+        ) : (
+          <div className="space-y-6">
+            {reviews.map((rev) => (
+              <div key={rev.id} className="border-b pb-4">
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-gray-800">
+                    {rev.profiles?.display_name || 'Anonymous'}
+                  </span>
+                  {renderStars(rev.rating)}
+                </div>
+                <p className="text-gray-700 mt-2">{rev.review_text}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
