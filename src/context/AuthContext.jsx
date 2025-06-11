@@ -6,27 +6,46 @@ const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
   const [session, setSession] = useState(undefined);
 
-  // Sign up with display name
+  // ✅ Sign up with display name and insert into profiles
   const signUpNewUser = async (email, password, displayName, role = 'user') => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          display_name: displayName,
-          role : role,
-        },
-      },
-    });
+    try {
+      // 1. Sign up the user
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
-    if (error) {
-      console.error("There was a problem signing up:", error);
-      return { success: false, error };
+      if (signUpError) {
+        console.error("There was a problem signing up:", signUpError);
+        return { success: false, error: signUpError.message };
+      }
+
+      const userId = signUpData.user?.id;
+
+      // 2. Insert user info into profiles table
+      if (userId) {
+        const { error: insertError } = await supabase.from('profiles').insert([
+          {
+            id: userId,
+            display_name: displayName,
+            role: role,
+          },
+        ]);
+
+        if (insertError) {
+          console.error("Error inserting profile:", insertError);
+          return { success: false, error: insertError.message };
+        }
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error("Unexpected error during sign up:", error);
+      return { success: false, error: error.message };
     }
-    return { success: true, data };
   };
 
-  // Sign in
+  // 🔐 Sign in
   const signInUser = async (email, password) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -42,19 +61,21 @@ export const AuthContextProvider = ({ children }) => {
       return { success: true, data };
     } catch (error) {
       console.error("An error occurred:", error);
+      return { success: false, error: error.message };
     }
   };
 
-  // Sign out
+  // 🔓 Sign out
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error("There was an error signing out:", error);
     } else {
-      setSession(null); // Clear session on sign out
+      setSession(null);
     }
   };
 
+  // ✅ Get session on mount and subscribe to changes
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -64,7 +85,6 @@ export const AuthContextProvider = ({ children }) => {
       setSession(session);
     });
 
-    // Cleanup subscription on unmount
     return () => {
       authListener.subscription.unsubscribe();
     };
@@ -79,6 +99,4 @@ export const AuthContextProvider = ({ children }) => {
   );
 };
 
-export const UserAuth = () => {
-  return useContext(AuthContext);
-};
+export const UserAuth = () => useContext(AuthContext);

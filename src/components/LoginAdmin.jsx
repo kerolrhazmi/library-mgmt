@@ -20,7 +20,7 @@ const LoginAdmin = () => {
       const result = await signInUser(email, password);
 
       if (result.success) {
-        navigate('/dashboard-admin');
+        navigate('/');
       }
     } catch (err) {
       setError('an error occured ');
