@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBook, FaClipboardCheck } from 'react-icons/fa';
+import { FaBook, FaClipboardCheck, FaExclamationTriangle } from 'react-icons/fa';
 
 const DashboardAdmin = () => {
   const navigate = useNavigate();
@@ -13,13 +13,17 @@ const DashboardAdmin = () => {
     navigate('/admin/approval');
   };
 
+  const goToOverdue = () => {
+    navigate('/admin/overdue');
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-8 mt-24">
       <h1 className="text-4xl font-extrabold mb-10 text-center text-gray-900">
         Admin Dashboard
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <button
           onClick={goToBookManager}
           className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl bg-red-600 hover:bg-red-700 shadow-lg transition text-white font-semibold text-lg"
@@ -36,6 +40,15 @@ const DashboardAdmin = () => {
         >
           <FaClipboardCheck size={40} />
           Approve Borrow Requests
+        </button>
+
+        <button
+          onClick={goToOverdue}
+          className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl bg-yellow-600 hover:bg-yellow-700 shadow-lg transition text-white font-semibold text-lg"
+          aria-label="Track Overdue Books"
+        >
+          <FaExclamationTriangle size={40} />
+          Track Overdue Books
         </button>
       </div>
     </div>

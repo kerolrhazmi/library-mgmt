@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import { CalendarDays, Star, User, Heart } from 'lucide-react';
+import { CalendarDays, Star, User, Heart, CheckCircle } from 'lucide-react';
 
 const BookDetail = () => {
   const { id } = useParams();
@@ -10,6 +10,7 @@ const BookDetail = () => {
   const [borrowDate, setBorrowDate] = useState('');
   const [returnDate, setReturnDate] = useState('');
   const [message, setMessage] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [isFavorited, setIsFavorited] = useState(false);
@@ -19,7 +20,11 @@ const BookDetail = () => {
     const fetchData = async () => {
       const [{ data: bookData, error: bookError }, { data: reviewData, error: reviewError }] = await Promise.all([
         supabase.from('books').select('*').eq('id', id).single(),
-        supabase.from('ratings').select('*, profiles(display_name)').eq('book_id', Number(id)).order('created_at', { ascending: false })
+        supabase
+          .from('ratings')
+          .select('*, profiles(display_name)')
+          .eq('book_id', Number(id))
+          .order('created_at', { ascending: false })
       ]);
 
       setBook(bookData);
@@ -57,6 +62,19 @@ const BookDetail = () => {
       setMessage('Please select both borrow and return dates.');
       return;
     }
+
+    const today = new Date().toISOString().split('T')[0];
+
+    if (borrowDate < today) {
+      setMessage('Borrow date cannot be in the past.');
+      return;
+    }
+
+    if (returnDate < today) {
+      setMessage('Return date cannot be in the past.');
+      return;
+    }
+
     if (borrowDate > returnDate) {
       setMessage('Return date must be after borrow date.');
       return;
@@ -83,9 +101,11 @@ const BookDetail = () => {
       console.error('Insert error:', error);
       setMessage('Failed to submit borrow request.');
     } else {
-      setMessage('Borrow request submitted successfully!');
+      setMessage('');
       setBorrowDate('');
       setReturnDate('');
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 3000);
     }
 
     setSubmitLoading(false);
@@ -145,10 +165,15 @@ const BookDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-12 mt-[70px]">
-      <div className="max-w-6xl mx-auto space-y-12">
+    <div className="min-h-screen bg-gray-50 px-4 py-12 mt-[70px] relative">
+      {showPopup && (
+        <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-100 border border-green-400 text-green-800 px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50">
+          <CheckCircle className="text-green-600" size={22} />
+          Request to borrow submitted successfully!
+        </div>
+      )}
 
-        {/* Book Info Section */}
+      <div className="max-w-6xl mx-auto space-y-12">
         <div className="bg-white rounded-xl shadow-lg p-8 grid grid-cols-1 md:grid-cols-2 gap-10 items-start transition-all duration-300">
           <img
             src={book.cover_url || 'https://via.placeholder.com/200x300?text=No+Cover'}

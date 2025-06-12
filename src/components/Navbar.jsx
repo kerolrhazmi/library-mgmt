@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { UserAuth } from '../context/AuthContext';
+import { FiBell } from 'react-icons/fi';
 
 const Navbar = ({ onGalleryClick, onLoginClick }) => {
   const [hasShadow, setHasShadow] = useState(false);
   const [displayName, setDisplayName] = useState(null);
   const [role, setRole] = useState(null);
+  const [showReminders, setShowReminders] = useState(false);
+  const [reminders, setReminders] = useState([]);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -27,16 +30,56 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
           .eq('id', session.user.id)
           .single();
 
-        if (error) {
-          console.error('Error fetching profile:', error.message);
-        } else {
+        if (!error && data) {
           setDisplayName(data.display_name);
           setRole(data.role);
+        } else {
+          console.error('Error fetching profile:', error?.message);
         }
       }
     };
 
     fetchProfile();
+  }, [session]);
+
+  useEffect(() => {
+    const fetchReminders = async () => {
+      if (!session?.user?.id) return;
+
+      const { data, error } = await supabase
+        .from('borrow_requests')
+        .select(`
+          return_date,
+          status,
+          books (
+            title
+          )
+        `)
+        .eq('user_id', session.user.id)
+        .eq('status', 'approved');
+
+      if (error) {
+        console.error('Error fetching reminders:', error.message);
+        return;
+      }
+
+      const today = new Date();
+      const fiveDaysLater = new Date();
+      fiveDaysLater.setDate(today.getDate() + 5);
+
+      const formatDate = (date) => date.toISOString().split('T')[0];
+      const todayStr = formatDate(today);
+      const fiveDaysLaterStr = formatDate(fiveDaysLater);
+
+      const upcoming = data.filter((entry) => {
+        const returnStr = formatDate(new Date(entry.return_date));
+        return returnStr >= todayStr && returnStr <= fiveDaysLaterStr;
+      });
+
+      setReminders(upcoming);
+    };
+
+    fetchReminders();
   }, [session]);
 
   const handleHomeClick = () => {
@@ -107,10 +150,54 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
           )}
         </div>
 
-        {/* Auth Info */}
-        <div className="flex items-center space-x-4">
+        {/* Auth Info + Reminders */}
+        <div className="flex items-center space-x-4 relative">
           {displayName ? (
             <>
+              {/* Bell Icon */}
+              <FiBell
+                size={24}
+                className="text-gray-700 hover:text-[#E41B1B] cursor-pointer"
+                onClick={() => setShowReminders(!showReminders)}
+              />
+
+              {/* Popup Reminders */}
+              {showReminders && (
+                <div className="absolute right-0 top-12 bg-white border border-gray-300 rounded-xl shadow-xl w-72 p-4 z-50">
+                  <h1 className="font-semibold mb-2 text-gray-800">Reminders</h1>
+                  {reminders.length === 0 ? (
+                    <p className="text-sm text-gray-600">No upcoming returns.</p>
+                  ) : (
+                    <ul className="space-y-3 max-h-52 overflow-y-auto pr-1">
+                      {reminders.map((reminder, index) => {
+                        const returnDate = new Date(reminder.return_date);
+                        const today = new Date();
+                        const daysLeft = Math.ceil((returnDate - today) / (1000 * 60 * 60 * 24));
+
+                        let badgeColor = 'bg-green-200 text-green-800';
+                        if (daysLeft <= 1) badgeColor = 'bg-red-200 text-red-800';
+                        else if (daysLeft <= 3) badgeColor = 'bg-yellow-200 text-yellow-800';
+                        else if (daysLeft <= 5) badgeColor = 'bg-orange-200 text-orange-800';
+
+                        return (
+                          <li key={index} className="border border-gray-200 rounded-md p-2 bg-gray-50 shadow-sm">
+                            <p className="font-semibold text-gray-800">{reminder.books.title}</p>
+                            <div className="flex items-center justify-between mt-1 text-sm">
+                              <span className="text-gray-600">
+                                Return by: {returnDate.toLocaleDateString()}
+                              </span>
+                              <span className={`px-2 py-0.5 rounded text-xs font-medium ${badgeColor}`}>
+                                {daysLeft} day{daysLeft !== 1 ? 's' : ''} left
+                              </span>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+              )}
+
               <h1 className="poppins-medium text-[17px] text-black">
                 Hello, <span className="text-[#E41B1B] font-bold">{displayName}</span>
               </h1>

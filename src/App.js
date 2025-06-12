@@ -18,6 +18,7 @@ import AdminDashboard from './components/DashboardAdmin';
 import AdminBookManager from './components/AdminBookManager';
 import AdminApproval from './components/AdminApproval'
 import ProfilePage from './components/ProfilePage'
+import OverdueBooks from './components/OverdueBooks'
 
 // Auth Context Provider
 import { AuthContextProvider } from "./context/AuthContext";
@@ -64,6 +65,7 @@ function App() {
             <Route path="/admin/books" element={<AdminBookManager />} />
             <Route path="/admin/approval" element={<AdminApproval/>} />
             <Route path="/profile-page" element={<ProfilePage/>} />
+            <Route path="/admin/overdue" element={<OverdueBooks/>} />
             
           </Routes>
           
