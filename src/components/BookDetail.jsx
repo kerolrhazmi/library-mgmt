@@ -167,9 +167,11 @@ const BookDetail = () => {
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-12 mt-[70px] relative">
       {showPopup && (
-        <div className="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-100 border border-green-400 text-green-800 px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50">
-          <CheckCircle className="text-green-600" size={22} />
-          Request to borrow submitted successfully!
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-green-100 border border-green-400 text-green-800 px-4 py-3 rounded-lg shadow-md flex items-center gap-2">
+            <CheckCircle className="text-green-600" size={20} />
+            <span className="text-sm font-medium">Borrow request sent!</span>
+          </div>
         </div>
       )}
 

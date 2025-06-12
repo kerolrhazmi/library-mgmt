@@ -134,6 +134,23 @@ const ProfilePage = () => {
     }
   };
 
+  const cancelRequest = async (id) => {
+    if (!window.confirm('Are you sure you want to cancel this request?')) return;
+    
+    const { error } = await supabase
+      .from('borrow_requests')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      alert('Request cancelled successfully!');
+      fetchBorrowedBooks();
+    } else {
+      console.error('Error cancelling request:', error);
+      alert('Failed to cancel request. Please try again.');
+    }
+  };
+
   const submitReview = async (book_id) => {
     const { error } = await supabase.from('ratings').insert({
       user_id: session?.user.id,
@@ -241,6 +258,8 @@ const ProfilePage = () => {
                   today > req.return_date &&
                   !reviewedBookIds.has(req.books?.id);
 
+                const canCancel = req.status === 'pending';
+
                 return (
                   <div
                     key={req.id}
@@ -291,9 +310,9 @@ const ProfilePage = () => {
                         </div>
                       </div>
 
-                      {/* Extension + Review */}
+                      {/* Extension + Review + Cancel */}
                       <div className="mt-4 flex flex-wrap items-center gap-4">
-                        {!req.extend_requested && (
+                        {!req.extend_requested && req.status === 'approved' && (
                           <>
                             <input
                               type="date"
@@ -309,6 +328,15 @@ const ProfilePage = () => {
                               Request Extension
                             </button>
                           </>
+                        )}
+
+                        {canCancel && (
+                          <button
+                            onClick={() => cancelRequest(req.id)}
+                            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+                          >
+                            Cancel Request
+                          </button>
                         )}
 
                         {canReview && (
