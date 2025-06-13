@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const ProfilePage = () => {
   const { session } = UserAuth();
 
-  const [activeTab, setActiveTab] = useState('borrowed'); // 'borrowed', 'favorites', or 'reviews'
+  const [activeTab, setActiveTab] = useState('borrowed'); // 'borrowed', 'favorites', 'reviews', or 'profile'
   const [requests, setRequests] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -17,6 +17,15 @@ const ProfilePage = () => {
   const [reviewData, setReviewData] = useState({ rating: 0, review_text: '' });
   const [reviewedBookIds, setReviewedBookIds] = useState(new Set());
 
+  // Profile Info states
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [phoneUpdateLoading, setPhoneUpdateLoading] = useState(false);
+  const [passwordUpdateLoading, setPasswordUpdateLoading] = useState(false);
+
   const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
@@ -24,6 +33,7 @@ const ProfilePage = () => {
       fetchBorrowedBooks();
       fetchFavorites();
       fetchUserReviews();
+      fetchUserProfile();
     }
   }, [session]);
 
@@ -103,6 +113,22 @@ const ProfilePage = () => {
     }
   };
 
+  const fetchUserProfile = async () => {
+    setProfileLoading(true);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('phone_number')
+      .eq('id', session?.user.id)
+      .single();
+
+    if (!error && data) {
+      setPhoneNumber(data.phone_number || '');
+    } else if (error && error.code !== 'PGRST116') {
+      console.error('Error fetching user profile:', error);
+    }
+    setProfileLoading(false);
+  };
+
   const checkReviewedBooks = async (bookIds) => {
     const { data, error } = await supabase
       .from('ratings')
@@ -149,6 +175,76 @@ const ProfilePage = () => {
       console.error('Error cancelling request:', error);
       alert('Failed to cancel request. Please try again.');
     }
+  };
+
+  const updatePhoneNumber = async () => {
+    setPhoneUpdateLoading(true);
+    
+    // First check if profile exists
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', session?.user.id)
+      .single();
+
+    let error;
+    
+    if (existingProfile) {
+      // Update existing profile
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ phone_number: phoneNumber })
+        .eq('id', session?.user.id);
+      error = updateError;
+    } else {
+      // Insert new profile
+      const { error: insertError } = await supabase
+        .from('profiles')
+        .insert({ 
+          id: session?.user.id,
+          phone_number: phoneNumber 
+        });
+      error = insertError;
+    }
+
+    if (!error) {
+      alert('Phone number updated successfully!');
+    } else {
+      console.error('Error updating phone number:', error);
+      alert('Failed to update phone number. Please try again.');
+    }
+    
+    setPhoneUpdateLoading(false);
+  };
+
+  const updatePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      alert('New passwords do not match!');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      alert('New password must be at least 6 characters long!');
+      return;
+    }
+
+    setPasswordUpdateLoading(true);
+
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+
+    if (!error) {
+      alert('Password updated successfully!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } else {
+      console.error('Error updating password:', error);
+      alert('Failed to update password. Please try again.');
+    }
+
+    setPasswordUpdateLoading(false);
   };
 
   const submitReview = async (book_id) => {
@@ -210,7 +306,7 @@ const ProfilePage = () => {
       <h1 className="text-4xl font-bold text-center text-gray-900 mb-8">My Profile</h1>
 
       {/* Tabs */}
-      <div className="flex justify-center gap-6 mb-10">
+      <div className="flex justify-center gap-6 mb-10 flex-wrap">
         <button
           onClick={() => setActiveTab('borrowed')}
           className={`px-4 py-2 rounded font-medium ${
@@ -240,6 +336,16 @@ const ProfilePage = () => {
           }`}
         >
           Your Reviews
+        </button>
+        <button
+          onClick={() => setActiveTab('profile')}
+          className={`px-4 py-2 rounded font-medium ${
+            activeTab === 'profile'
+              ? 'bg-[#E41B1B] text-white'
+              : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+          }`}
+        >
+          Profile Info
         </button>
       </div>
 
@@ -558,6 +664,90 @@ const ProfilePage = () => {
             </div>
           )}
         </>
+      )}
+
+      {/* Profile Info Tab */}
+      {activeTab === 'profile' && (
+        <div className="max-w-2xl mx-auto">
+          {profileLoading ? (
+            <p className="text-center text-gray-600 text-lg">Loading profile information...</p>
+          ) : (
+            <div className="space-y-8">
+              {/* User Email Display */}
+              <div className="bg-white shadow-lg rounded-xl p-6">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">Account Information</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <div className="bg-gray-100 px-3 py-2 rounded border text-gray-600">
+                      {session?.user?.email}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Phone Number Section */}
+              <div className="bg-white shadow-lg rounded-xl p-6">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">Phone Number</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                    <input
+                      type="tel"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      placeholder="Enter your phone number"
+                      className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#E41B1B] focus:border-transparent"
+                    />
+                  </div>
+                  <button
+                    onClick={updatePhoneNumber}
+                    disabled={phoneUpdateLoading}
+                    className="bg-[#E41B1B] text-white px-6 py-2 rounded hover:bg-[#C41717] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {phoneUpdateLoading ? 'Updating...' : 'Update Phone Number'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Password Change Section */}
+              <div className="bg-white shadow-lg rounded-xl p-6">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">Change Password</h2>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Enter new password"
+                      className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#E41B1B] focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm new password"
+                      className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#E41B1B] focus:border-transparent"
+                    />
+                  </div>
+                  <button
+                    onClick={updatePassword}
+                    disabled={passwordUpdateLoading || !newPassword || !confirmPassword}
+                    className="bg-[#E41B1B] text-white px-6 py-2 rounded hover:bg-[#C41717] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {passwordUpdateLoading ? 'Updating...' : 'Update Password'}
+                  </button>
+                  <p className="text-xs text-gray-500">Password must be at least 6 characters long</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

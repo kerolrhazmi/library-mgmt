@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBook, FaClipboardCheck, FaExclamationTriangle } from 'react-icons/fa';
+import { FaBook, FaClipboardCheck, FaExclamationTriangle, FaUsers } from 'react-icons/fa'; // Added FaUsers icon
 
 const DashboardAdmin = () => {
   const navigate = useNavigate();
@@ -17,8 +17,12 @@ const DashboardAdmin = () => {
     navigate('/admin/overdue');
   };
 
+  const goToUserManagement = () => {
+    navigate('/admin/users'); // 👈 Make sure this route is defined in your router
+  };
+
   return (
-    <div className="max-w-4xl mx-auto p-8 mt-24">
+    <div className="min-h-screen max-w-6xl mx-auto p-8 mt-24">
       <h1 className="text-4xl font-extrabold mb-10 text-center text-gray-900">
         Admin Dashboard
       </h1>
@@ -49,6 +53,16 @@ const DashboardAdmin = () => {
         >
           <FaExclamationTriangle size={40} />
           Track Overdue Books
+        </button>
+
+        {/* ✅ New Manage Users Button */}
+        <button
+          onClick={goToUserManagement}
+          className="flex flex-col items-center justify-center gap-3 p-8 rounded-xl bg-green-600 hover:bg-green-700 shadow-lg transition text-white font-semibold text-lg"
+          aria-label="Manage Users"
+        >
+          <FaUsers size={40} />
+          Manage Users
         </button>
       </div>
     </div>

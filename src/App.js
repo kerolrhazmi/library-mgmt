@@ -20,6 +20,8 @@ import AdminApproval from "./components/AdminApproval";
 import ProfilePage from "./components/ProfilePage";
 import OverdueBooks from "./components/OverdueBooks";
 import ScrollToTop from "./components/ScrollToTop";
+import ProfilePublic from "./components/ProfilePublic"
+import AdminUserManagement from "./components/AdminUserManagement";
 
 // Auth Context Provider
 import { AuthContextProvider } from "./context/AuthContext";
@@ -69,6 +71,8 @@ function ScrollablePages() {
         <Route path="/admin/approval" element={<AdminApproval />} />
         <Route path="/profile-page" element={<ProfilePage />} />
         <Route path="/admin/overdue" element={<OverdueBooks />} />
+        <Route path="/profile/:id" element={<ProfilePublic />} />
+        <Route path="/admin/users" element={<AdminUserManagement />} />
       </Routes>
 
       {/* Footer always visible, but page scrolls to top on route change */}
