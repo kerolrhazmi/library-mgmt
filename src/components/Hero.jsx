@@ -14,7 +14,7 @@ const Hero = () => {
 
   return (
     <div className="relative h-[600px] w-full overflow-hidden">
-      {/* Background image with gradient mask */}
+      {/* Background image with gradient blur mask */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
@@ -23,9 +23,9 @@ const Hero = () => {
           WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
         }}
       />
-
+      
       {/* Bottom gradient fade to match next section */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white z-10" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50 z-10" />
 
       {/* Content */}
       <div className="relative z-20 flex items-center h-full pl-16">
