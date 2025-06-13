@@ -33,7 +33,7 @@ const SignupStudent = () => {
   return (
     <div className="bg-gradient-to-r from-gray-200 to-gray-50 h-[600px] w-full flex items-center justify-center">
       <div className="bg-white shadow-md rounded-2xl p-10 w-[400px] text-center">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-4">Sign Up as Student</h1>
+        <h1 className="text-2xl font-semibold text-gray-800 mb-4">Sign Up as User</h1>
         <p className="text-gray-600 mb-6">
           Enter your details. Already have an account?
           <Link className="text-red-500" to="/login-student"> Login</Link>
