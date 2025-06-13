@@ -21,12 +21,14 @@ export const AuthContextProvider = ({ children }) => {
       }
 
       const userId = signUpData.user?.id;
+      const userEmail = signUpData.user?.email;
 
       // 2. Insert user info into profiles table
       if (userId) {
         const { error: insertError } = await supabase.from('profiles').insert([
           {
             id: userId,
+            email: userEmail, 
             display_name: displayName,
             role: role,
           },

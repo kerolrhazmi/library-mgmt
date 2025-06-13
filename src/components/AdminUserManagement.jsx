@@ -11,7 +11,7 @@ const AdminUserManagement = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, display_name, email, role');
+        .select('*');
 
       if (!error) {
         setUsers(data);
