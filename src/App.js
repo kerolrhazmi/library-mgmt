@@ -22,6 +22,7 @@ import OverdueBooks from "./components/OverdueBooks";
 import ScrollToTop from "./components/ScrollToTop";
 import ProfilePublic from "./components/ProfilePublic"
 import AdminUserManagement from "./components/AdminUserManagement";
+import MostReviewedBook from "./components/MostReviewedBook";
 
 // Auth Context Provider
 import { AuthContextProvider } from "./context/AuthContext";
@@ -53,6 +54,7 @@ function ScrollablePages() {
           element={
             <>
               <Hero />
+              <MostReviewedBook />
               <Hero2 refProp={hero2Ref} />
               <Login refProp={loginRef} />
             </>

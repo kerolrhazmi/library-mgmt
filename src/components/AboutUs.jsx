@@ -22,15 +22,15 @@ const AboutUs = () => {
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <MapPin size={18} className="text-red-400 mt-1" />
-                <span>123 Library Lane, Kuala Lumpur, Malaysia</span>
+                <span>Sultan Abdul Samad Library, Jalan Upm, 43400 Seri Kembangan, Selangor Darul Ehsan</span>
               </li>
               <li className="flex items-start gap-3">
                 <Phone size={18} className="text-red-400 mt-1" />
-                <span>+60 12-345 6789</span>
+                <span>03-9769 8642</span>
               </li>
               <li className="flex items-start gap-3">
                 <Mail size={18} className="text-red-400 mt-1" />
-                <span>support@putralib.my</span>
+                <span>lib@upm.edu.my</span>
               </li>
             </ul>
           </div>
