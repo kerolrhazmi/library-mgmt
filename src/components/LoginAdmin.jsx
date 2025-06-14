@@ -41,7 +41,7 @@ const LoginAdmin = () => {
           <h1 className="text-2xl font-semibold text-gray-800 mb-4">Admin Login</h1>
           <p className="text-gray-600 mb-6">
             Welcome back!
-            <Link className="text-red-500 ml-1" to="/signup-admin">Sign up</Link>
+            <Link className="text-red-500 ml-1" to="/signup-admin"></Link>
           </p>
 
           <form onSubmit={handleSignIn} className="space-y-4">

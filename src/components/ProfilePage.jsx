@@ -160,6 +160,26 @@ const ProfilePage = () => {
     }
   };
 
+  const returnBook = async (id) => {
+    if (!window.confirm('Are you sure you want to return this book?')) return;
+    
+    const { error } = await supabase
+      .from('borrow_requests')
+      .update({
+        status: 'returned',
+        new_return_date: new Date().toISOString().split('T')[0]
+      })
+      .eq('id', id);
+
+    if (!error) {
+      alert('Book returned successfully!');
+      fetchBorrowedBooks();
+    } else {
+      console.error('Error returning book:', error);
+      alert('Failed to return book. Please try again.');
+    }
+  };
+
   const cancelRequest = async (id) => {
     if (!window.confirm('Are you sure you want to cancel this request?')) return;
     
@@ -360,11 +380,11 @@ const ProfilePage = () => {
             <div className="space-y-6">
               {requests.map((req) => {
                 const canReview =
-                  req.status === 'approved' &&
-                  today > req.return_date &&
+                  req.status === 'returned' &&
                   !reviewedBookIds.has(req.books?.id);
 
                 const canCancel = req.status === 'pending';
+                const canReturn = req.status === 'approved' && req.status !== 'returned';
 
                 return (
                   <div
@@ -396,6 +416,8 @@ const ProfilePage = () => {
                                   ? 'text-green-600 font-medium'
                                   : req.status === 'rejected'
                                   ? 'text-red-600 font-medium'
+                                  : req.status === 'returned'
+                                  ? 'text-blue-600 font-medium'
                                   : 'text-yellow-600 font-medium'
                               }
                             >
@@ -413,10 +435,15 @@ const ProfilePage = () => {
                               <strong>Extension Requested Until:</strong> {req.new_return_date}
                             </p>
                           )}
+                          {req.status === 'returned' && req.actual_return_date && (
+                            <p>
+                              <strong>Returned On:</strong> {req.actual_return_date}
+                            </p>
+                          )}
                         </div>
                       </div>
 
-                      {/* Extension + Review + Cancel */}
+                      {/* Extension + Return + Review + Cancel */}
                       <div className="mt-4 flex flex-wrap items-center gap-4">
                         {!req.extend_requested && req.status === 'approved' && (
                           <>
@@ -434,6 +461,15 @@ const ProfilePage = () => {
                               Request Extension
                             </button>
                           </>
+                        )}
+
+                        {canReturn && (
+                          <button
+                            onClick={() => returnBook(req.id)}
+                            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                          >
+                            Return Book
+                          </button>
                         )}
 
                         {canCancel && (
@@ -454,7 +490,7 @@ const ProfilePage = () => {
                           </button>
                         )}
 
-                        {!canReview && reviewedBookIds.has(req.books?.id) && (
+                        {!canReview && reviewedBookIds.has(req.books?.id) && req.status === 'returned' && (
                           <p className="text-sm italic text-gray-500">Review already submitted.</p>
                         )}
                       </div>

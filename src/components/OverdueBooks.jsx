@@ -3,7 +3,6 @@ import { supabase } from '../supabaseClient';
 
 const OverdueBooks = () => {
   const [overdue, setOverdue] = useState([]);
-  const [returned, setReturned] = useState([]);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -11,23 +10,16 @@ const OverdueBooks = () => {
 
       const { data, error } = await supabase
         .from('borrow_requests')
-        .select('*, books(*), profiles(display_name)');
+        .select('*, books(*), profiles(display_name)')
+        .eq('status', 'approved')
+        .lt('return_date', today);
 
       if (error) {
         console.error('Error fetching:', error);
         return;
       }
 
-      const overdueBooks = data.filter(
-        req => req.status === 'approved' && req.return_date < today
-      );
-
-      const returnedBooks = data.filter(
-        req => req.status === 'returned' && req.return_date < today
-      );
-
-      setOverdue(overdueBooks);
-      setReturned(returnedBooks);
+      setOverdue(data || []);
     };
 
     fetchBooks();
@@ -44,15 +36,11 @@ const OverdueBooks = () => {
       return;
     }
 
-    // Move from overdue to returned list
-    const updated = overdue.find((req) => req.id === id);
-    if (updated) {
-      setOverdue(prev => prev.filter(req => req.id !== id));
-      setReturned(prev => [...prev, { ...updated, status: 'returned' }]);
-    }
+    // Remove from overdue list
+    setOverdue(prev => prev.filter(req => req.id !== id));
   };
 
-  const renderTable = (list, showButton = false) => (
+  const renderTable = (list) => (
     <div className="overflow-x-auto rounded-xl shadow-lg border border-gray-200 mb-10">
       <table className="min-w-full bg-white text-sm text-gray-800">
         <thead className="bg-red-600 text-white text-left uppercase text-xs">
@@ -62,7 +50,7 @@ const OverdueBooks = () => {
             <th className="p-4">Borrowed On</th>
             <th className="p-4">Return By</th>
             <th className="p-4">Days Overdue</th>
-            {showButton && <th className="p-4">Actions</th>}
+            <th className="p-4">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -81,16 +69,14 @@ const OverdueBooks = () => {
                 <td className="p-4">{req.borrow_date}</td>
                 <td className="p-4">{req.return_date}</td>
                 <td className="p-4 text-red-600 font-bold">{daysLate} days</td>
-                {showButton && (
-                  <td className="p-4">
-                    <button
-                      onClick={() => handleMarkReturned(req.id)}
-                      className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 text-xs font-semibold"
-                    >
-                      Mark Returned
-                    </button>
-                  </td>
-                )}
+                <td className="p-4">
+                  <button
+                    onClick={() => handleMarkReturned(req.id)}
+                    className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 text-xs font-semibold"
+                  >
+                    Mark Returned
+                  </button>
+                </td>
               </tr>
             );
           })}
@@ -111,15 +97,8 @@ const OverdueBooks = () => {
         </p>
       ) : (
         <>
-          <h3 className="text-xl font-bold mb-2 text-gray-700">Still Not Returned</h3>
-          {renderTable(overdue, true)}
-        </>
-      )}
-
-      {returned.length > 0 && (
-        <>
-          <h3 className="text-xl font-bold mb-2 text-gray-700">✅ Marked as Returned</h3>
-          {renderTable(returned, false)}
+          <h3 className="text-xl font-bold mb-2 text-gray-700">Books Not Yet Returned</h3>
+          {renderTable(overdue)}
         </>
       )}
     </div>
