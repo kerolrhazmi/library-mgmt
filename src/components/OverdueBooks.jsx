@@ -102,7 +102,7 @@ const OverdueBooks = () => {
   return (
     <div className="max-w-6xl mx-auto p-8 mt-24">
       <h2 className="text-3xl font-extrabold text-gray-800 mb-6 text-center">
-        📚 Overdue Books
+         Overdue Books
       </h2>
 
       {overdue.length === 0 ? (

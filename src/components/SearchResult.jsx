@@ -84,35 +84,37 @@ const SearchResults = () => {
   };
 
   return (
-    <div className="flex max-w-[1400px] mx-auto px-6 gap-8 py-[50px]">
+    <div className="flex max-w-[1400px] mx-auto px-6 gap-8 py-12 mt-[100px]">
       {/* Left Sidebar */}
-      <aside className="w-[15%]  rounded-xl p-5 text-black h-fit sticky top-20 self-start pt-[80px]">
-        <form onSubmit={handleSearchSubmit} className="flex flex-col gap-4 mb-6">
+      <aside className="w-[18%] rounded-2xl bg-white shadow-lg p-6 h-fit sticky top-24 self-start">
+        <form onSubmit={handleSearchSubmit} className="flex flex-col gap-4 mb-8">
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search books..."
-            className="px-3 py-2 rounded-md border  border-white text-black placeholder-black focus:outline-none focus:ring-2 focus:ring-white"
+            className="px-4 py-2 rounded-lg border border-gray-300 shadow-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-400"
           />
           <button
             type="submit"
-            className="bg-white text-[#E41B1B] font-semibold py-2 rounded-md hover:bg-gray-200 transition"
+            className="bg-red-500 text-white font-medium py-2 rounded-lg hover:bg-red-600 transition"
           >
             Search
           </button>
         </form>
 
         <div>
-          <h3 className="font-semibold text-lg mb-3">Genres</h3>
-          <ul className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto">
+          <h3 className="font-semibold text-xl text-gray-800 mb-4">Genres</h3>
+          <ul className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto text-sm text-gray-700">
             <li
               tabIndex={0}
               role="button"
               onClick={() => handleGenreClick('')}
               onKeyDown={(e) => e.key === 'Enter' && handleGenreClick('')}
-              className={`cursor-pointer py-1 px-3 rounded ${
-                selectedGenre === '' ? 'bg-white text-[#E41B1B]' : 'hover:bg-white hover:text-[#E41B1B]'
+              className={`cursor-pointer py-2 px-4 rounded-lg ${
+                selectedGenre === ''
+                  ? 'bg-red-100 text-red-600 font-semibold'
+                  : 'hover:bg-red-50 hover:text-red-600'
               }`}
             >
               All
@@ -124,10 +126,10 @@ const SearchResults = () => {
                 role="button"
                 onClick={() => handleGenreClick(genre)}
                 onKeyDown={(e) => e.key === 'Enter' && handleGenreClick(genre)}
-                className={`cursor-pointer py-1 px-3 rounded ${
+                className={`cursor-pointer py-2 px-4 rounded-lg ${
                   selectedGenre === genre
-                    ? 'bg-white text-[#E41B1B]'
-                    : 'hover:bg-white hover:text-[#E41B1B]'
+                    ? 'bg-red-100 text-red-600 font-semibold'
+                    : 'hover:bg-red-50 hover:text-red-600'
                 }`}
               >
                 {genre}
@@ -138,8 +140,8 @@ const SearchResults = () => {
       </aside>
 
       {/* Right Content */}
-      <main className="w-[75%]">
-        <h2 className="text-3xl font-semibold mb-6">
+      <main className="w-[82%]">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6">
           {selectedGenre
             ? `Books in "${selectedGenre}" Genre`
             : searchTerm
@@ -147,27 +149,31 @@ const SearchResults = () => {
             : 'All Books'}
         </h2>
 
-        {loading && <p>Loading books...</p>}
-        {!loading && books.length === 0 && <p>No books found.</p>}
+        {loading && (
+          <div className="text-gray-500 text-lg">Loading books...</div>
+        )}
+        {!loading && books.length === 0 && (
+          <div className="text-gray-500 text-lg">No books found.</div>
+        )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
           {books.map(({ id, title, author, genre, cover_url }) => (
             <Link
               to={`/book/${id}`}
               key={id}
-              className="flex flex-col items-center bg-white rounded shadow-md hover:shadow-lg transition cursor-pointer p-4"
+              className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition p-4 flex flex-col items-center"
             >
-              <div className="bg-[#EEEEEE] w-60 h-[270px] flex items-center justify-center p-8">
+              <div className="bg-gray-100 w-full h-[270px] flex items-center justify-center overflow-hidden rounded-lg">
                 <img
                   src={cover_url || 'https://via.placeholder.com/150x220?text=No+Cover'}
                   alt={title}
-                  className="object-contain max-h-full"
+                  className="object-contain h-full group-hover:scale-105 transition duration-300"
                 />
               </div>
-              <div className="text-center mt-3">
-                <h3 className="text-xl font-bold mb-1">{title}</h3>
-                <p className="text-gray-700">By {author}</p>
-                <p className="text-gray-600 italic">{genre}</p>
+              <div className="text-center mt-4 space-y-1">
+                <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+                <p className="text-sm text-gray-700">By {author}</p>
+                <p className="text-xs text-gray-500 italic">{genre}</p>
               </div>
             </Link>
           ))}
