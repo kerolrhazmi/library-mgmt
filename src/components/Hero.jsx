@@ -34,8 +34,7 @@ const Hero = () => {
             Search Your Book
           </h1>
           <p className="poppins-medium text-[17px] text-black mb-6">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima
-            consequatur numquam ratione.
+            Discover books from every genre — fast, easy, and right at your fingertips. Powered by UPM’s digital library
           </p>
           <form onSubmit={handleSubmit} className="flex">
             <input
