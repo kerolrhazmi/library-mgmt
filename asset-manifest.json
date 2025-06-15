@@ -1,18 +1,18 @@
 {
   "files": {
-    "main.css": "/library-mgmt/static/css/main.8b9987ed.css",
-    "main.js": "/library-mgmt/static/js/main.7998a267.js",
+    "main.css": "/library-mgmt/static/css/main.6867e26e.css",
+    "main.js": "/library-mgmt/static/js/main.0ebfd04b.js",
     "static/js/198.b6cc0a08.chunk.js": "/library-mgmt/static/js/198.b6cc0a08.chunk.js",
     "static/media/libraroi.jpeg": "/library-mgmt/static/media/libraroi.67dffb2e52e4fe47b767.jpeg",
     "static/media/UPM.png": "/library-mgmt/static/media/UPM.f91874db79f8c34b75e0.png",
     "static/media/temple-of-books-6.jpg": "/library-mgmt/static/media/temple-of-books-6.3c4b8cd316e2afdb6cd3.jpg",
     "index.html": "/library-mgmt/index.html",
-    "main.8b9987ed.css.map": "/library-mgmt/static/css/main.8b9987ed.css.map",
-    "main.7998a267.js.map": "/library-mgmt/static/js/main.7998a267.js.map",
+    "main.6867e26e.css.map": "/library-mgmt/static/css/main.6867e26e.css.map",
+    "main.0ebfd04b.js.map": "/library-mgmt/static/js/main.0ebfd04b.js.map",
     "198.b6cc0a08.chunk.js.map": "/library-mgmt/static/js/198.b6cc0a08.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.8b9987ed.css",
-    "static/js/main.7998a267.js"
+    "static/css/main.6867e26e.css",
+    "static/js/main.0ebfd04b.js"
   ]
 }
