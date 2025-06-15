@@ -36,7 +36,7 @@ const MostReviewedBook = () => {
           count,
         }))
         .sort((a, b) => b.average - a.average)
-        .slice(0, 5);
+        .slice(0, 4);
 
       // Step 3: Fetch book details
       const { data: booksData, error: booksError } = await supabase
