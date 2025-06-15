@@ -20,7 +20,7 @@ import AdminApproval from "./components/AdminApproval";
 import ProfilePage from "./components/ProfilePage";
 import OverdueBooks from "./components/OverdueBooks";
 import ScrollToTop from "./components/ScrollToTop";
-import ProfilePublic from "./components/ProfilePublic"
+import ProfilePublic from "./components/ProfilePublic";
 import AdminUserManagement from "./components/AdminUserManagement";
 import MostReviewedBook from "./components/MostReviewedBook";
 
@@ -77,7 +77,6 @@ function ScrollablePages() {
         <Route path="/admin/users" element={<AdminUserManagement />} />
       </Routes>
 
-      {/* Footer always visible, but page scrolls to top on route change */}
       <AboutUs />
     </>
   );
@@ -86,7 +85,7 @@ function ScrollablePages() {
 function App() {
   return (
     <AuthContextProvider>
-      <Router>
+      <Router basename={process.env.PUBLIC_URL}>
         <ScrollToTop />
         <div className="cursor-default">
           <ScrollablePages />
