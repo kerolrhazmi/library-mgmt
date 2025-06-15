@@ -10,6 +10,7 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
   const [role, setRole] = useState(null);
   const [showReminders, setShowReminders] = useState(false);
   const [reminders, setReminders] = useState([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -132,8 +133,8 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
           <h1 className="special-gothic-expanded-one-regular text-[30px]">Lib</h1>
         </div>
 
-        {/* Navigation */}
-        <div className="flex items-center mr-[100px] space-x-5">
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center mr-[100px] space-x-5">
           <NavLink label="Home" onClick={handleHomeClick} />
           <NavLink label="Catalogue" onClick={handleGalleryClick} />
           <NavLink label="About" onClick={handleAboutClick} />
@@ -150,18 +151,24 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
           )}
         </div>
 
-        {/* Auth Info + Reminders */}
-        <div className="flex items-center space-x-4 relative">
+        {/* Hamburger (Mobile Only) */}
+        <div className="md:hidden">
+          <button onClick={() => setDrawerOpen(true)}>
+            <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Desktop Auth Info */}
+        <div className="hidden md:flex items-center space-x-4 relative">
           {displayName ? (
             <>
-              {/* Bell Icon */}
               <FiBell
                 size={24}
                 className="text-gray-700 hover:text-[#E41B1B] cursor-pointer"
                 onClick={() => setShowReminders(!showReminders)}
               />
-
-              {/* Popup Reminders */}
               {showReminders && (
                 <div className="absolute right-0 top-12 bg-white border border-gray-300 rounded-xl shadow-xl w-72 p-4 z-50">
                   <h1 className="font-semibold mb-2 text-gray-800">Reminders</h1>
@@ -211,7 +218,53 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
           ) : (
             <h1
               className="poppins-medium text-[17px] pl-5 hover:text-[#E41B1B] cursor-pointer"
-              onClick={onLoginClick}
+              onClick={() => {
+                navigate('/');
+                onLoginClick();
+              }}
+            >
+              Login
+            </h1>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Drawer */}
+      <div
+        className={`fixed top-0 right-0 h-full w-[250px] bg-white shadow-lg z-50 transform transition-transform duration-300 ${
+          drawerOpen ? 'translate-x-0' : 'translate-x-full'
+        } md:hidden`}
+      >
+        <div className="flex justify-between items-center p-4 border-b">
+          <h2 className="text-lg font-semibold">Menu</h2>
+          <button onClick={() => setDrawerOpen(false)}>
+            <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="flex flex-col px-4 pt-4 space-y-4">
+          <NavLink label="Home" onClick={() => { setDrawerOpen(false); handleHomeClick(); }} />
+          <NavLink label="Catalogue" onClick={() => { setDrawerOpen(false); handleGalleryClick(); }} />
+          <NavLink label="About" onClick={() => { setDrawerOpen(false); handleAboutClick(); }} />
+          {role === 'admin' && (
+            <NavLink label="Admin Dashboard" onClick={() => { setDrawerOpen(false); handleAdminDashboardClick(); }} />
+          )}
+          {role === 'user' && (
+            <NavLink label="Profile" onClick={() => { setDrawerOpen(false); handleProfileClick(); }} />
+          )}
+          {displayName ? (
+            <button
+              onClick={() => { setDrawerOpen(false); handleLogout(); }}
+              className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition duration-300"
+            >
+              Logout
+            </button>
+          ) : (
+            <h1
+              onClick={() => { setDrawerOpen(false); onLoginClick(); }}
+              className="poppins-medium text-[17px] text-black hover:text-[#E41B1B] cursor-pointer"
             >
               Login
             </h1>
