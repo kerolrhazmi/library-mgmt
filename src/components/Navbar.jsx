@@ -263,7 +263,7 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
             </button>
           ) : (
             <h1
-              onClick={() => { setDrawerOpen(false); onLoginClick(); }}
+              onClick={() => { setDrawerOpen(false); navigate('/'); onLoginClick(); }}
               className="poppins-medium text-[17px] text-black hover:text-[#E41B1B] cursor-pointer"
             >
               Login
