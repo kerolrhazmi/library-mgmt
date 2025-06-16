@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
+import { HashRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 
 // Components
 import Navbar from "./components/Navbar";
@@ -85,7 +85,7 @@ function ScrollablePages() {
 function App() {
   return (
     <AuthContextProvider>
-      <Router basename={process.env.PUBLIC_URL}>
+      <Router>
         <ScrollToTop />
         <div className="cursor-default">
           <ScrollablePages />
