@@ -84,9 +84,10 @@ const SearchResults = () => {
   };
 
   return (
-    <div className="flex max-w-[1400px] mx-auto px-6 gap-8 py-12 mt-[100px]">
-      {/* Left Sidebar */}
-      <aside className="w-[18%] rounded-2xl bg-white shadow-lg p-6 h-fit sticky top-24 self-start">
+    <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-12 mt-[100px] flex flex-col md:flex-row gap-8">
+      
+      {/* Sidebar (Stacked on top in mobile) */}
+      <aside className="w-full md:w-[18%] bg-white shadow-lg rounded-2xl p-6 h-fit md:sticky md:top-24">
         <form onSubmit={handleSearchSubmit} className="flex flex-col gap-4 mb-8">
           <input
             type="text"
@@ -105,7 +106,7 @@ const SearchResults = () => {
 
         <div>
           <h3 className="font-semibold text-xl text-gray-800 mb-4">Genres</h3>
-          <ul className="flex flex-col gap-2 max-h-[60vh] overflow-y-auto text-sm text-gray-700">
+          <ul className="flex flex-wrap md:flex-col gap-2 text-sm text-gray-700 max-h-[60vh] overflow-y-auto">
             <li
               tabIndex={0}
               role="button"
@@ -139,9 +140,9 @@ const SearchResults = () => {
         </div>
       </aside>
 
-      {/* Right Content */}
-      <main className="w-[82%]">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6">
+      {/* Book results */}
+      <main className="w-full md:w-[82%]">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
           {selectedGenre
             ? `Books in "${selectedGenre}" Genre`
             : searchTerm
