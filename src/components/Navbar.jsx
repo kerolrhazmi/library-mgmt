@@ -180,7 +180,6 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
                         const returnDate = new Date(reminder.return_date);
                         const today = new Date();
                         const daysLeft = Math.ceil((returnDate - today) / (1000 * 60 * 60 * 24));
-
                         let badgeColor = 'bg-green-200 text-green-800';
                         if (daysLeft <= 1) badgeColor = 'bg-red-200 text-red-800';
                         else if (daysLeft <= 3) badgeColor = 'bg-yellow-200 text-yellow-800';
@@ -254,6 +253,48 @@ const Navbar = ({ onGalleryClick, onLoginClick }) => {
           {role === 'user' && (
             <NavLink label="Profile" onClick={() => { setDrawerOpen(false); handleProfileClick(); }} />
           )}
+
+          {/* Mobile Reminders */}
+          {displayName && (
+            <>
+              <div className="flex items-center justify-between">
+                <h1 className="text-gray-800 font-medium">Reminders</h1>
+                <FiBell
+                  size={22}
+                  className="text-gray-700 hover:text-[#E41B1B] cursor-pointer"
+                  onClick={() => setShowReminders(!showReminders)}
+                />
+              </div>
+              {showReminders && (
+                <div className="bg-gray-50 border rounded-md p-2 max-h-44 overflow-y-auto">
+                  {reminders.length === 0 ? (
+                    <p className="text-sm text-gray-600">No upcoming returns.</p>
+                  ) : (
+                    reminders.map((reminder, index) => {
+                      const returnDate = new Date(reminder.return_date);
+                      const today = new Date();
+                      const daysLeft = Math.ceil((returnDate - today) / (1000 * 60 * 60 * 24));
+                      let badgeColor = 'bg-green-200 text-green-800';
+                      if (daysLeft <= 1) badgeColor = 'bg-red-200 text-red-800';
+                      else if (daysLeft <= 3) badgeColor = 'bg-yellow-200 text-yellow-800';
+                      else if (daysLeft <= 5) badgeColor = 'bg-orange-200 text-orange-800';
+
+                      return (
+                        <div key={index} className="mt-1 p-2 bg-white shadow rounded">
+                          <p className="text-sm font-medium">{reminder.books.title}</p>
+                          <div className="flex justify-between text-xs mt-1">
+                            <span>Return by: {returnDate.toLocaleDateString()}</span>
+                            <span className={`px-2 rounded ${badgeColor}`}>{daysLeft}d left</span>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              )}
+            </>
+          )}
+
           {displayName ? (
             <button
               onClick={() => { setDrawerOpen(false); handleLogout(); }}
