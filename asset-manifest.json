@@ -1,18 +1,18 @@
 {
   "files": {
     "main.css": "/library-mgmt/static/css/main.6867e26e.css",
-    "main.js": "/library-mgmt/static/js/main.524e2ee5.js",
+    "main.js": "/library-mgmt/static/js/main.4ffe6157.js",
     "static/js/198.b6cc0a08.chunk.js": "/library-mgmt/static/js/198.b6cc0a08.chunk.js",
     "static/media/libraroi.jpeg": "/library-mgmt/static/media/libraroi.67dffb2e52e4fe47b767.jpeg",
     "static/media/UPM.png": "/library-mgmt/static/media/UPM.f91874db79f8c34b75e0.png",
     "static/media/temple-of-books-6.jpg": "/library-mgmt/static/media/temple-of-books-6.3c4b8cd316e2afdb6cd3.jpg",
     "index.html": "/library-mgmt/index.html",
     "main.6867e26e.css.map": "/library-mgmt/static/css/main.6867e26e.css.map",
-    "main.524e2ee5.js.map": "/library-mgmt/static/js/main.524e2ee5.js.map",
+    "main.4ffe6157.js.map": "/library-mgmt/static/js/main.4ffe6157.js.map",
     "198.b6cc0a08.chunk.js.map": "/library-mgmt/static/js/198.b6cc0a08.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6867e26e.css",
-    "static/js/main.524e2ee5.js"
+    "static/js/main.4ffe6157.js"
   ]
 }
